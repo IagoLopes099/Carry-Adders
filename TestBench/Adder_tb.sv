@@ -9,7 +9,7 @@ module Adder_tb #(
     logic exp_c_out;
     
     always @(*) begin : golden_model_adder
-        temp_sum = (adderif.in_x + adderif.in_y + adderif.carry_in);
+        temp_sum = (adderif.in_a + adderif.in_b + adderif.carry_in);
 
         exp_s = temp_sum[WIDTH-1:0];
         exp_c_out = temp_sum[WIDTH];
@@ -18,12 +18,12 @@ module Adder_tb #(
 
     task exp;
         if(adderif.out_s !== exp_s || adderif.carry_out !== exp_c_out) begin
-            $display("Error at a time : %0d, X : %b (%d), Y : %b (%d), Carry-in : %b",
+            $display("Error at a time : %0d, A : %b (%d), B : %b (%d), Carry-in : %b",
                 $time,
-                adderif.in_x,
-                adderif.in_x,
-                adderif.in_y,
-                adderif.in_y,
+                adderif.in_a,
+                adderif.in_a,
+                adderif.in_b,
+                adderif.in_b,
                 adderif.carry_in
             );
 
@@ -45,22 +45,22 @@ module Adder_tb #(
         end
 
         if(WIDTH <= 32) begin
-            $display("Time : %0d, X : %b (%d), Y : %b (%d), Carry-in : %b, Sum : %b (%d), Carry-out : %b", 
+            $display("Time : %0d, A : %b (%d), B : %b (%d), Carry-in : %b, Sum : %b (%d), Carry-out : %b", 
                         $time,
-                        adderif.in_x,
-                        adderif.in_x,
-                        adderif.in_y,
-                        adderif.in_y,
+                        adderif.in_a,
+                        adderif.in_a,
+                        adderif.in_b,
+                        adderif.in_b,
                         adderif.carry_in, 
                         adderif.out_s, 
                         adderif.out_s, 
                         adderif.carry_out );
         end 
         else begin
-            $display("Time : %0d, X : %d, Y : %d, Carry-in : %b, Sum : %d, Carry-out : %b", 
+            $display("Time : %0d, A : %d, B : %d, Carry-in : %b, Sum : %d, Carry-out : %b", 
                         $time,
-                        adderif.in_x,
-                        adderif.in_y,
+                        adderif.in_a,
+                        adderif.in_b,
                         adderif.carry_in,
                         adderif.out_s,
                         adderif.carry_out 
@@ -71,15 +71,15 @@ module Adder_tb #(
     endtask
 
     initial begin
-        adderif.in_x = 'b0;
-        adderif.in_y = 'b0;
+        adderif.in_a = 'b0;
+        adderif.in_b = 'b0;
         adderif.carry_in = 1'b0;
 
         #25;
 
         repeat (200) begin
-            adderif.in_x = $urandom;
-            adderif.in_y = $urandom;
+            adderif.in_a = $urandom;
+            adderif.in_b = $urandom;
             adderif.carry_in = $urandom_range(0,1);
             
             #25;

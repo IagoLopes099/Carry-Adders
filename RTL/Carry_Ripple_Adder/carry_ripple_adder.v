@@ -1,4 +1,4 @@
-`include "full_adder.v"
+`include "../full_adder.v"
 
 module carry_ripple_adder #(
     parameter WIDTH = 4

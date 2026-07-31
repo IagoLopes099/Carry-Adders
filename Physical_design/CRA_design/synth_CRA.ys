@@ -1,8 +1,34 @@
-read_verilog ../../RTL/Carry_Ripple_Adder/carry_ripple_adder.v 
-read_verilog ../../RTL/Carry_Ripple_Adder/full_adder.v
+read_verilog ../../RTL_verilog/Carry_Ripple_Adder/carry_ripple_adder.v 
+read_verilog ../../RTL_verilog/Carry_Ripple_Adder/full_adder.v
 
 hierarchy -check -top carry_ripple_adder
 
+#proc; opt; fsm; opt; memory; opt
 synth -top carry_ripple_adder
 
-write_verilog carry_ripple_adder_synth.v
+techmap; opt
+
+# mapping flip-flops to path were .lib is located
+dfflibmap -liberty /home/iago/Documentos/HDL/libs_cells/NanGate_45nm_OCL_v2010_12/NanGate_45nm_OCL_v2010_12/pdk_v1.3_v2010_12/NangateOpenCellLibrary_PDKv1_3_v2010_12/NangateOpenCellLibrary_PDKv1_3_v2010_12/Front_End/Liberty/NangateOpenCellLibrary_functional.lib
+
+# mapping logic to path were .lib is located
+abc -liberty /home/iago/Documentos/HDL/libs_cells/NanGate_45nm_OCL_v2010_12/NanGate_45nm_OCL_v2010_12/pdk_v1.3_v2010_12/NangateOpenCellLibrary_PDKv1_3_v2010_12/NangateOpenCellLibrary_PDKv1_3_v2010_12/Front_End/Liberty/NangateOpenCellLibrary_functional.lib
+
+# cleanup
+clean
+
+#
+stat -liberty /home/iago/Documentos/HDL/libs_cells/NanGate_45nm_OCL_v2010_12/NanGate_45nm_OCL_v2010_12/pdk_v1.3_v2010_12/NangateOpenCellLibrary_PDKv1_3_v2010_12/NangateOpenCellLibrary_PDKv1_3_v2010_12/Front_End/Liberty/NangateOpenCellLibrary_functional.lib
+
+# write synthesized design
+write_verilog carry_ripple_adder_synth_45nm.v
+
+#to run this script uses:
+#yosys -s filename
+
+#to view the synthesis you need choose which one of the modules (if there is more than one) you want to see.
+#like
+#show full_adder
+# or
+#show carry_ripple_adder
+#obs: you need be in yosys mode (just written : "yosys" in terminal)

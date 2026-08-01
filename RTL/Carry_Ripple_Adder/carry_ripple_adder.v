@@ -1,5 +1,8 @@
 `include "../full_adder.v"
 
+`ifndef _CRA_
+`define _CRA_
+
 module carry_ripple_adder #(
     parameter WIDTH = 4
 )(
@@ -30,3 +33,5 @@ module carry_ripple_adder #(
     endgenerate
 
 endmodule
+
+`endif

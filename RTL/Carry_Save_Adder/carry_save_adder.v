@@ -1,5 +1,8 @@
 `include "../Carry_Ripple_Adder/carry_ripple_adder.v"
 
+`ifndef _CSA_
+`define _CSA_
+
 module carry_save_adder #(
     parameter WIDTH = 4
 )(
@@ -9,10 +12,10 @@ module carry_save_adder #(
     output out_cout_CSA
 );
 
-    wire [(WIDTH*2)-1:0] chain_carrys; 
-    wire [(WIDTH*2):0] chain_carrys_sum;
+    (* keep = 1 *) wire [(WIDTH*2)-1:0] chain_carrys; 
+    (* keep = 1 *) wire [(WIDTH*2):0] chain_carrys_sum;
     assign chain_carrys_sum = {1'b0,chain_carrys};
-    wire [WIDTH-1:0] a_bus, b_bus;
+    (* keep = 1 *) wire [WIDTH-1:0] a_bus, b_bus;
 
 
     genvar i;
@@ -46,3 +49,5 @@ module carry_save_adder #(
 
 
 endmodule
+
+`endif

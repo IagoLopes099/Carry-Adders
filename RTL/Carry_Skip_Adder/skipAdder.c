@@ -144,13 +144,15 @@ int main(){
     GENLIB_LOCON("vdd", IN, "vdd");
     GENLIB_LOCON("vss", IN, "vss");
     GENLIB_LOCON("Cin0", IN, "Cin0");
-    GENLIB_LOCON("Q", OUT, "Q");
 
     for(int i = 0; i < nB; i++){
         GENLIB_LOCON(GENLIB_NAME("A%d", i), IN, GENLIB_NAME("A%d", i));
         GENLIB_LOCON(GENLIB_NAME("B%d", i), IN, GENLIB_NAME("B%d", i));
+        GENLIB_LOCON(GENLIB_NAME("S%d", i), IN, GENLIB_NAME("S%d", i));
     }
-
+    
+    GENLIB_LOCON("Cout_final", OUT, GENLIB_NAME("Cin%d", nB));
+    
     skipAdder(nB, nG);
     GENLIB_SAVE_LOFIG();
     return 0;

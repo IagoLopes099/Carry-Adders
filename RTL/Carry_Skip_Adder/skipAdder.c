@@ -31,7 +31,7 @@ void Adder(const char* Cin, const char* A, const char* B, const char* S, const c
                 GENLIB_NAME("CoutAxBC%d", idxC),
                 POWER);
 
-    GENLIB_LOINS("o2_x1",
+    GENLIB_LOINS("o2_x2",
                 GENLIB_NAME("or%d", idxC),
                 GENLIB_NAME("CoutAB%d", idxC), GENLIB_NAME("CoutAxBC%d", idxC),
                 Cout,

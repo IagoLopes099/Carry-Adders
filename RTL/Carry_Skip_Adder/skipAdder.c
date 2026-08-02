@@ -118,20 +118,30 @@ void skipAdder(int numBits, int numGroups){
         pBuffers[posNoGrupo][63] = '\0';
         pInputs[posNoGrupo] = pBuffers[posNoGrupo];
         
-        Adder(GENLIB_NAME("Cin%d", i), 
-            GENLIB_NAME("A%d", i), 
-            GENLIB_NAME("B%d", i), 
-            GENLIB_NAME("S%d", i), 
-            GENLIB_NAME("Cout%d", i), i, i);
-        
-        if((i+1)%bloco == 0){
-            //MUX 2x2
-            mux2x1(pInputs, GENLIB_NAME("Cin%d", idxI), GENLIB_NAME("Cout%d", i), GENLIB_NAME("Cin%d", i+1), bloco, idCin);
-            
-            idxI = idxF + 1;
-            idxF += bloco;
-            idCin++;
+        if(!((i+1)%bloco)){
+            Adder(GENLIB_NAME("C%d", i), 
+                    GENLIB_NAME("A%d", i), 
+                    GENLIB_NAME("B%d", i), 
+                    GENLIB_NAME("S%d", i), 
+                    GENLIB_NAME("C%d", i+1), i, i);
+            continue;
         }
+        
+        char coutBuf[64];
+        strncpy(coutBuf, GENLIB_NAME("CoutRaw%d", i), 63);
+        coutBuf[63] = '\0';
+
+        Adder(GENLIB_NAME("C%d", i), 
+                GENLIB_NAME("A%d", i), 
+                GENLIB_NAME("B%d", i), 
+                GENLIB_NAME("S%d", i), 
+                coutBuf, i, i);
+
+        mux2x1(pInputs, GENLIB_NAME("C%d", idxI), coutBuf, GENLIB_NAME("C%d", i+1), bloco, idCin);
+            
+        idxI = idxF + 1;
+        idxF += bloco;
+        idCin++;
     }
 }
 
@@ -143,7 +153,7 @@ int main(){
 
     GENLIB_LOCON("vdd", IN, "vdd");
     GENLIB_LOCON("vss", IN, "vss");
-    GENLIB_LOCON("Cin0", IN, "Cin0");
+    GENLIB_LOCON("C0", IN, "C0");
 
     for(int i = 0; i < nB; i++){
         GENLIB_LOCON(GENLIB_NAME("A%d", i), IN, GENLIB_NAME("A%d", i));
@@ -151,7 +161,7 @@ int main(){
         GENLIB_LOCON(GENLIB_NAME("S%d", i), IN, GENLIB_NAME("S%d", i));
     }
     
-    GENLIB_LOCON("Cout_final", OUT, GENLIB_NAME("Cin%d", nB));
+    GENLIB_LOCON("Cout_final", OUT, GENLIB_NAME("C%d", nB));
     
     skipAdder(nB, nG);
     GENLIB_SAVE_LOFIG();

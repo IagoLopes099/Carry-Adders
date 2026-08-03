@@ -1,0 +1,8 @@
+read_verilog carry_ripple_adder.v 
+read_verilog full_adder.v
+
+hierarchy -check -top carry_ripple_adder
+
+synth -top carry_ripple_adder
+
+write_verilog netlists.v

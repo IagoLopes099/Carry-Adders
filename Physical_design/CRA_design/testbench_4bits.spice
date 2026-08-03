@@ -1,0 +1,66 @@
+* =======================================================
+* Testbench Unificado: Carry Ripple Adder 4-bits (Sky130)
+* =======================================================
+
+.option warn=0
+
+* --- 1. Bibliotecas e Modelos ---
+.lib "/home/iago/.ciel/sky130A/libs.tech/ngspice/sky130.lib.spice" tt
+.include "/home/iago/.ciel/sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_fd_sc_hd.spice"
+.include "carry_ripple_adder.spice"
+
+* --- 2. Fontes de Alimentação ---
+VVDD VPWR 0 DC 1.8V
+VVSS VGND 0 DC 0V
+
+* --- 3. Fontes de Entrada (Estímulos) ---
+VCin Cin VGND DC 0V
+
+* Estímulos dinâmicos para o barramento A
+VA0 A[0] VGND PULSE(0 1.8 0 50p 50p 5n  10n)
+VA1 A[1] VGND PULSE(0 1.8 0 50p 50p 10n 20n)
+VA2 A[2] VGND PULSE(0 1.8 0 50p 50p 20n 40n)
+VA3 A[3] VGND PULSE(0 1.8 0 50p 50p 40n 80n)
+
+* Valores fixos para o barramento B (0101 em binário = 5)
+VB0 B[0] VGND DC 1.8V
+VB1 B[1] VGND DC 0V
+VB2 B[2] VGND DC 1.8V
+VB3 B[3] VGND DC 0V
+
+* --- 5. Instância do Somador ---
+* ATENCAO: a ordem de pinos abaixo segue o .subckt REAL extraido
+* (results/signoff/carry_ripple_adder.spice):
+*   .subckt carry_ripple_adder VGND VPWR in_a[0] in_a[1] in_a[2] in_a[3]
+*   + in_b[0] in_b[1] in_b[2] in_b[3] in_cin out_cout
+*   + out_sum[0] out_sum[1] out_sum[2] out_sum[3]
+* A ordem antiga (A,B,Cin,Sum,Cout,VPWR,VGND) ligava VPWR/VGND
+* internos a nos de sinal (A[0]/A[1]), causando contencao interna
+* e niveis intermediarios nas saidas. Corrigido abaixo.
+Xadder VGND VPWR A[0] A[1] A[2] A[3] B[0] B[1] B[2] B[3] Cin Cout Sum[0] Sum[1] Sum[2] Sum[3] carry_ripple_adder
+
+* --- 6. Bloco de Controle e Plotagem Unificada ---
+.control
+  set color0=white      ; Fundo branco limpo
+  set color1=black      ; Texto e eixos pretos
+
+  * Executa simulacao por 80ns com passo de 10ps
+  tran 10p 80n
+  run
+
+  * Plota TODOS OS SINAIS em uma UNICA JANELA visual.
+  * Cada sinal digital varia 0 a 1.8V. Usamos offsets de 2.5V
+  * (> 1.8V de excursao) para garantir folga de 0.7V entre
+  * trilhas adjacentes e evitar qualquer sobreposicao visual.
+  * Ordem (topo -> base): Cout, Sum[3..0], B[3..0], Cin, A[3..0].
+
+  * IMPORTANTE: o comando "plot" precisa estar em UMA UNICA LINHA.
+  * O ngspice, dentro do bloco .control, nao trata de forma confiavel
+  * a continuacao de linha com "\" para este comando -- em varias
+  * versoes/builds ele processa so a primeira linha e ignora o resto
+  * silenciosamente (foi o que aconteceu: so o Cout apareceu).
+  plot (v("Cout")+32.5) (v("Sum[3]")+30.0) (v("Sum[2]")+27.5) (v("Sum[1]")+25.0) (v("Sum[0]")+22.5) (v("B[3]")+20.0) (v("B[2]")+17.5) (v("B[1]")+15.0) (v("B[0]")+12.5) (v("Cin")+10.0) (v("A[3]")+7.5) (v("A[2]")+5.0) (v("A[1]")+2.5) v("A[0]") title "Formas de Onda Analogicas Empilhadas (Cout no topo, A[0] na base)"
+
+.endc
+
+.end

@@ -11,22 +11,26 @@ module carry_lookahead_adder #(
 );
 
 
-    (* keep = 1 *) wire [WIDTH:0] carrys; // chain of carrys
-    assign carrys[0] = in_cin; 
+    wire [WIDTH:0] carrys; // chain of carrys
     assign out_cout = carrys[WIDTH];
 
+    wire [WIDTH-1:0] g, p;
+
+    cla_generator #(.WIDTH(WIDTH)) cla_gen(
+        .p(p),
+        .g(g),
+        .cin(in_cin),
+        .carry(carrys)
+    );
+
     genvar i;
-    generate 
-        for(i=0 ; i<WIDTH ; i=i+1) begin : carry_generators
-            cla_generator couts_generator (
-                .a(in_a[i]),
-                .b(in_b[i]),
-                .cin(carrys[i]),
-                .cout(carrys[i+1])
-            ); 
+    generate
+        for(i=0; i < WIDTH; i = i+1) begin
+            assign g[i] = in_a[i] & in_b[i]; 
+            assign p[i] = in_a[i] ^ in_b[i];
         end
     endgenerate
-
+    
 
     generate
         for(i=0; i<WIDTH; i=i+1) begin : full_adders_generators

@@ -1,0 +1,9 @@
+read_verilog ../../RTL/full_adder.v
+read_verilog ../../RTL/Carry_Lookahead_Adder/carry_lookahead_adder.v
+read_verilog ../../RTL/Carry_Lookahead_Adder/cla_generator.v
+
+hierarchy -check -top carry_lookahead_adder
+
+synth -top carry_lookahead_adder
+
+write_verilog netlists.v
